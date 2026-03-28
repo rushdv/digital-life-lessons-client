@@ -1,83 +1,86 @@
-import { createBrowserRouter } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
-import DashboardLayout from "../layouts/DashboardLayout";
-import PrivateRoute from "./PrivateRoute";
-import AdminRoute from "./AdminRoute";
+import { createBrowserRouter } from 'react-router-dom'
+import MainLayout from '../layouts/MainLayout'
+import DashboardLayout from '../layouts/DashboardLayout'
+import PrivateRoute from './PrivateRoute'
+import AdminRoute from './AdminRoute'
 
-// Pages
-import Home from "../pages/Home/Home";
-import Login from "../pages/Auth/Login";
-import Register from "../pages/Auth/Register";
-import PublicLessons from "../pages/Lessons/PublicLessons";
-import LessonDetails from "../pages/Lessons/LessonDetails";
-import Pricing from "../pages/Pricing/Pricing";
-import PaymentSuccess from "../pages/Payment/Success";
-import PaymentCancel from "../pages/Payment/Cancel";
-import NotFound from "../pages/NotFound";
+import Home from '../pages/Home/Home'
+import Login from '../pages/Auth/Login'
+import Register from '../pages/Auth/Register'
+import PublicLessons from '../pages/Lessons/PublicLessons'
+import LessonDetails from '../pages/Lessons/LessonDetails'
+import Pricing from '../pages/Pricing/Pricing'
+import Success from '../pages/Payment/Success'
+import Cancel from '../pages/Payment/Cancel'
+import NotFound from '../pages/NotFound'
 
-// User Dashboard
-import DashboardHome from "../pages/Dashboard/User/DashboardHome";
-import AddLesson from "../pages/Dashboard/User/AddLesson";
-import MyLessons from "../pages/Dashboard/User/MyLessons";
-import MyFavorites from "../pages/Dashboard/User/MyFavorites";
-import UserProfile from "../pages/Dashboard/User/Profile";
+import DashboardHome from '../pages/Dashboard/User/DashboardHome'
+import AddLesson from '../pages/Dashboard/User/AddLesson'
+import MyLessons from '../pages/Dashboard/User/MyLessons'
+import MyFavorites from '../pages/Dashboard/User/MyFavorites'
+import Profile from '../pages/Dashboard/User/Profile'
+import UpdateLesson from '../pages/Dashboard/User/UpdateLesson'
 
-// Admin Dashboard
-import AdminHome from "../pages/Dashboard/Admin/AdminHome";
-import ManageUsers from "../pages/Dashboard/Admin/ManageUsers";
-import ManageLessons from "../pages/Dashboard/Admin/ManageLessons";
-import ReportedLessons from "../pages/Dashboard/Admin/ReportedLessons";
+import AdminHome from '../pages/Dashboard/Admin/AdminHome'
+import ManageUsers from '../pages/Dashboard/Admin/ManageUsers'
+import ManageLessons from '../pages/Dashboard/Admin/ManageLessons'
+import ReportedLessons from '../pages/Dashboard/Admin/ReportedLessons'
+import AdminProfile from '../pages/Dashboard/Admin/AdminProfile'
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
-      { path: "/public-lessons", element: <PublicLessons /> },
+      { index: true, element: <Home /> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
+      { path: 'lessons', element: <PublicLessons /> },
       {
-        path: "/lessons/:id",
+        path: 'lessons/:id',
         element: <PrivateRoute><LessonDetails /></PrivateRoute>,
       },
       {
-        path: "/pricing",
+        path: 'pricing',
         element: <PrivateRoute><Pricing /></PrivateRoute>,
       },
-      { path: "/payment/success", element: <PaymentSuccess /> },
-      { path: "/payment/cancel", element: <PaymentCancel /> },
+      { path: 'payment/success', element: <Success /> },
+      { path: 'payment/cancel', element: <Cancel /> },
     ],
   },
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
     children: [
       { index: true, element: <DashboardHome /> },
-      { path: "add-lesson", element: <AddLesson /> },
-      { path: "my-lessons", element: <MyLessons /> },
-      { path: "my-favorites", element: <MyFavorites /> },
-      { path: "profile", element: <UserProfile /> },
-      // Admin routes
+      { path: 'add-lesson', element: <AddLesson /> },
+      { path: 'my-lessons', element: <MyLessons /> },
+      { path: 'update-lesson/:id', element: <UpdateLesson /> },
+      { path: 'my-favorites', element: <MyFavorites /> },
+      { path: 'profile', element: <Profile /> },
       {
-        path: "admin",
+        path: 'admin',
         element: <AdminRoute><AdminHome /></AdminRoute>,
       },
       {
-        path: "admin/manage-users",
+        path: 'admin/manage-users',
         element: <AdminRoute><ManageUsers /></AdminRoute>,
       },
       {
-        path: "admin/manage-lessons",
+        path: 'admin/manage-lessons',
         element: <AdminRoute><ManageLessons /></AdminRoute>,
       },
       {
-        path: "admin/reported-lessons",
+        path: 'admin/reported-lessons',
         element: <AdminRoute><ReportedLessons /></AdminRoute>,
+      },
+      {
+        path: 'admin/profile',
+        element: <AdminRoute><AdminProfile /></AdminRoute>,
       },
     ],
   },
-  { path: "*", element: <NotFound /> },
-]);
+  { path: '*', element: <NotFound /> },
+])
 
-export default router;
+export default router
