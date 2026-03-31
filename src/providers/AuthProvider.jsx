@@ -1,100 +1,55 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from 'react'
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
   GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
   updateProfile,
-} from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
-import axios from "axios";
+} from 'firebase/auth'
+import { auth } from '../firebase/firebase.config'
 
-export const AuthContext = createContext(null);
-const googleProvider = new GoogleAuthProvider();
+export const AuthContext = createContext(null)
+
+const googleProvider = new GoogleAuthProvider()
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const createUser = (email, password) => {
-    setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
+  const register = (email, password) =>
+    createUserWithEmailAndPassword(auth, email, password)
 
-  const signIn = (email, password) => {
-    setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+  const login = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password)
 
-  const googleSignIn = () => {
-    setLoading(true);
-    return signInWithPopup(auth, googleProvider);
-  };
+  const googleLogin = () => signInWithPopup(auth, googleProvider)
 
-  const logOut = () => {
-    setLoading(true);
-    return signOut(auth);
-  };
+  const logout = () => signOut(auth)
 
-  const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo,
-    });
-  };
-
-  // Sync premium status from MongoDB
-  const syncUserStatus = async (currentUser) => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/users/status/${currentUser.email}`
-      );
-      setIsPremium(res.data.isPremium);
-    } catch (err) {
-      setIsPremium(false);
-    }
-  };
+  const updateUserProfile = (name, photo) =>
+    updateProfile(auth.currentUser, { displayName: name, photoURL: photo })
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        // Save JWT token
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/jwt`,
-          { email: currentUser.email }
-        );
-        localStorage.setItem("access-token", res.data.token);
-        await syncUserStatus(currentUser);
-      } else {
-        localStorage.removeItem("access-token");
-        setIsPremium(false);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+      setLoading(false)
+    })
+    return () => unsubscribe()
+  }, [])
 
   const authInfo = {
     user,
     loading,
-    isPremium,
-    createUser,
-    signIn,
-    googleSignIn,
-    logOut,
+    register,
+    login,
+    googleLogin,
+    logout,
     updateUserProfile,
-    syncUserStatus,
-  };
+  }
 
-  return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+}
 
-export default AuthProvider;
+export default AuthProvider
