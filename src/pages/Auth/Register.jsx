@@ -6,7 +6,7 @@ import useAuth from "../../hooks/useAuth";
 import axios from "axios";
 
 const Register = () => {
-  const { createUser, googleSignIn, updateUserProfile } = useAuth();
+  const { register: createUser, googleLogin: googleSignIn, updateUserProfile } = useAuth();
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
 

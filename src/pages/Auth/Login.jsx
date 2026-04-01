@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,7 +7,7 @@ import useAuth from "../../hooks/useAuth";
 import axios from "axios";
 
 const Login = () => {
-  const { signIn, googleSignIn } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -18,6 +19,7 @@ const Login = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  // Save user to MongoDB
   const saveUserToDB = async (user) => {
     await axios.post(`${import.meta.env.VITE_API_URL}/users`, {
       name: user.displayName,
@@ -26,26 +28,47 @@ const Login = () => {
     });
   };
 
+  // Get JWT token from server
+  const getJWT = async (email) => {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, {
+      email,
+    });
+    localStorage.setItem("access-token", res.data.token);
+  };
+
+  // Email login
   const onSubmit = async (data) => {
     try {
-      await signIn(data.email, data.password);
+      const result = await login(data.email, data.password);
+
+      await saveUserToDB(result.user);
+      await getJWT(result.user.email);
+
       toast.success("Welcome back!");
       navigate(from, { replace: true });
+
     } catch (err) {
-      toast.error(err.message.includes("user-not-found")
-        ? "No account found with this email."
-        : err.message.includes("wrong-password")
-        ? "Incorrect password."
-        : "Login failed. Please try again.");
+      toast.error(
+        err.message.includes("user-not-found")
+          ? "No account found with this email."
+          : err.message.includes("wrong-password")
+          ? "Incorrect password."
+          : "Login failed. Please try again."
+      );
     }
   };
 
+  // Google login
   const handleGoogle = async () => {
     try {
-      const result = await googleSignIn();
+      const result = await googleLogin();
+
       await saveUserToDB(result.user);
+      await getJWT(result.user.email);
+
       toast.success("Logged in with Google!");
       navigate(from, { replace: true });
+
     } catch (err) {
       toast.error("Google login failed.");
     }
@@ -56,26 +79,42 @@ const Login = () => {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
           <span className="text-4xl">📖</span>
-          <h2 className="text-2xl font-bold text-gray-800 mt-2">Welcome Back</h2>
-          <p className="text-gray-500 text-sm mt-1">Sign in to continue your journey</p>
+          <h2 className="text-2xl font-bold text-gray-800 mt-2">
+            Welcome Back
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">
+            Sign in to continue your journey
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+
             <input
               type="email"
               placeholder="your@email.com"
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               {...register("email", { required: "Email is required" })}
             />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+
             <div className="relative">
               <input
                 type={showPass ? "text" : "password"}
@@ -83,6 +122,7 @@ const Login = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
                 {...register("password", { required: "Password is required" })}
               />
+
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
@@ -91,9 +131,15 @@ const Login = () => {
                 {showPass ? "Hide" : "Show"}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -103,23 +149,33 @@ const Login = () => {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="flex items-center my-5">
           <hr className="flex-1 border-gray-200" />
           <span className="mx-3 text-xs text-gray-400">OR</span>
           <hr className="flex-1 border-gray-200" />
         </div>
 
+        {/* Google Login */}
         <button
           onClick={handleGoogle}
           className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
         >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            className="w-5 h-5"
+            alt="Google"
+          />
           Continue with Google
         </button>
 
+        {/* Register link */}
         <p className="text-center text-sm text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-600 font-medium hover:underline">
+          <Link
+            to="/register"
+            className="text-indigo-600 font-medium hover:underline"
+          >
             Sign Up
           </Link>
         </p>
