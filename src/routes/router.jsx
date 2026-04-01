@@ -13,6 +13,7 @@ import Pricing from '../pages/Pricing/Pricing'
 import Success from '../pages/Payment/Success'
 import Cancel from '../pages/Payment/Cancel'
 import NotFound from '../pages/NotFound'
+import PublicProfile from '../pages/Profile/PublicProfile'
 
 import DashboardHome from '../pages/Dashboard/User/DashboardHome'
 import AddLesson from '../pages/Dashboard/User/AddLesson'
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       },
       { path: 'payment/success', element: <Success /> },
       { path: 'payment/cancel', element: <Cancel /> },
+      { path: 'profile/:email', element: <PublicProfile /> },
     ],
   },
   {

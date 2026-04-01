@@ -190,7 +190,7 @@ const LessonDetails = () => {
           <p className="text-sm text-gray-500">{lesson.creatorEmail}</p>
         </div>
         <Link
-          to={`/dashboard/profile`}
+          to={`/profile/${lesson.creatorEmail}`}
           className="text-sm text-indigo-600 border border-indigo-300 px-4 py-2 rounded-lg hover:bg-indigo-100 transition"
         >
           View Profile
