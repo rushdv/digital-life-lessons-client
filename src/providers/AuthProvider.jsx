@@ -17,6 +17,8 @@ const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
+  const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const register = (email, password) =>
@@ -40,15 +42,23 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        // JWT token request
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/jwt`,
-          { email: currentUser.email }
-        );
+        // JWT and User Data sync
+        try {
+          const jwtRes = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, { email: currentUser.email });
+          localStorage.setItem("access-token", jwtRes.data.token);
 
-        localStorage.setItem("access-token", res.data.token);
+          const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/role/${currentUser.email}`, {
+            headers: { authorization: `Bearer ${jwtRes.data.token}` }
+          });
+          setRole(userRes.data.role);
+          setIsPremium(userRes.data.isPremium);
+        } catch (err) {
+          console.error("Auth sync error", err);
+        }
       } else {
         localStorage.removeItem("access-token");
+        setRole(null);
+        setIsPremium(false);
       }
 
       setLoading(false);
@@ -59,7 +69,11 @@ const AuthProvider = ({ children }) => {
 
   const authInfo = {
     user,
+    role,
+    isPremium,
     loading,
+    setRole,
+    setIsPremium,
     register,
     login,
     googleLogin,

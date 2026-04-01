@@ -41,95 +41,89 @@ const PublicLessons = () => {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">🌍 Public Life Lessons</h1>
-        <p className="text-gray-500 mt-2">Explore wisdom shared by our community</p>
+    <div className="max-w-7xl mx-auto px-4 py-20 animate-fade-in">
+      <header className="text-center mb-16">
+        <h1 className="text-4xl font-black text-gray-800 tracking-tight">Public Wisdom Archive 🌍</h1>
+        <p className="text-gray-500 font-medium mt-2">Explore the collective consciousness of our community.</p>
+      </header>
+
+      {/* Advanced Filters */}
+      <div className="bg-white rounded-[2rem] shadow-xl shadow-indigo-50 border border-gray-100 p-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+          <div className="lg:col-span-2">
+            <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2">Search Insights</label>
+            <input
+              type="text"
+              placeholder="Filter by title or keyword..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="w-full bg-gray-50 border-none rounded-2xl px-6 py-3.5 text-sm font-medium focus:ring-4 focus:ring-indigo-100 transition outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2">Category</label>
+            <select
+              value={category}
+              onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+              className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3.5 text-sm font-bold text-gray-600 focus:ring-4 focus:ring-indigo-100 transition outline-none"
+            >
+              <option value="">All Topics</option>
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2">Emotional Tone</label>
+            <select
+              value={tone}
+              onChange={(e) => { setTone(e.target.value); setPage(1); }}
+              className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3.5 text-sm font-bold text-gray-600 focus:ring-4 focus:ring-indigo-100 transition outline-none"
+            >
+              <option value="">All Tones</option>
+              {TONES.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+             <button
+              onClick={resetFilters}
+              className="w-full bg-indigo-50 text-indigo-700 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-100 transition"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8 flex flex-wrap gap-3 items-end">
-        <div className="flex-1 min-w-[200px]">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Search</label>
-          <input
-            type="text"
-            placeholder="Search by title..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-          <select
-            value={category}
-            onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="">All Categories</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Emotional Tone</label>
-          <select
-            value={tone}
-            onChange={(e) => { setTone(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="">All Tones</option>
-            {TONES.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Sort By</label>
-          <select
-            value={sort}
-            onChange={(e) => { setSort(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="newest">Newest First</option>
-            <option value="most-saved">Most Saved</option>
-          </select>
-        </div>
-        <button
-          onClick={resetFilters}
-          className="text-sm text-indigo-600 border border-indigo-300 rounded-lg px-4 py-2 hover:bg-indigo-50 transition"
-        >
-          Reset
-        </button>
-      </div>
-
-      {/* Lessons Grid */}
+      {/* Grid Content */}
       {data?.lessons?.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-5xl mb-4">📭</p>
-          <p className="text-lg">No lessons found. Try different filters.</p>
+        <div className="text-center py-32 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
+          <p className="text-6xl mb-6">📭</p>
+          <p className="text-xl font-black text-gray-400">The archive is silent for these filters.</p>
+          <button onClick={resetFilters} className="mt-4 text-indigo-600 font-bold underline">Clear all searches</button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {data?.lessons?.map((lesson) => (
-            <LessonCard key={lesson._id} lesson={lesson} isPremium={isPremium} user={user} />
+            <LessonCard key={lesson._id} lesson={lesson} isPremium={isPremium} />
           ))}
         </div>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-10">
+        <div className="flex justify-center items-center gap-3 mt-20">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 border rounded-lg text-sm disabled:opacity-40 hover:bg-indigo-50"
+            className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl shadow-sm disabled:opacity-30 hover:scale-105 transition"
           >
-            ← Prev
+            <span className="text-xl">←</span>
           </button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-9 h-9 rounded-lg text-sm font-medium ${
-                page === p ? "bg-indigo-600 text-white" : "border hover:bg-indigo-50"
+              className={`w-12 h-12 rounded-2xl text-sm font-black transition ${
+                page === p ? "bg-indigo-600 text-white shadow-xl shadow-indigo-200" : "bg-white border border-gray-100 hover:bg-gray-50"
               }`}
             >
               {p}
@@ -138,9 +132,9 @@ const PublicLessons = () => {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-4 py-2 border rounded-lg text-sm disabled:opacity-40 hover:bg-indigo-50"
+            className="w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-2xl shadow-sm disabled:opacity-30 hover:scale-105 transition"
           >
-            Next →
+            <span className="text-xl">→</span>
           </button>
         </div>
       )}
@@ -148,77 +142,86 @@ const PublicLessons = () => {
   );
 };
 
-const LessonCard = ({ lesson, isPremium, user }) => {
+const LessonCard = ({ lesson, isPremium }) => {
   const isLocked = lesson.accessLevel === "premium" && !isPremium;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition flex flex-col h-full">
-      {/* Image */}
-      <div className="relative h-44 bg-indigo-50">
+    <div className="group bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden hover:shadow-2xl hover:shadow-indigo-100/50 transition-all duration-500 flex flex-col h-full transform hover:-translate-y-2">
+      {/* Visual Header */}
+      <div className="relative h-56 bg-indigo-50 overflow-hidden">
         {lesson.image ? (
           <img
             src={lesson.image}
             alt={lesson.title}
-            className={`w-full h-full object-cover ${isLocked ? "blur-sm" : ""}`}
+            className={`w-full h-full object-cover transition duration-700 group-hover:scale-110 ${isLocked ? "blur-md brightness-50" : ""}`}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl">📖</div>
+          <div className="w-full h-full flex items-center justify-center text-6xl group-hover:rotate-12 transition duration-500">📖</div>
         )}
+        
+        {/* Badges */}
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
+           <span className="bg-white/90 backdrop-blur-md text-[10px] font-black text-gray-800 px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg">
+             {lesson.category}
+           </span>
+           {lesson.accessLevel === "premium" && (
+             <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg">
+               ⭐ Premium
+             </span>
+           )}
+        </div>
+
         {isLocked && (
-          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center">
-            <span className="text-3xl">🔒</span>
-            <p className="text-white text-xs font-semibold mt-1">Premium Lesson</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-3 shadow-2xl">🔒</div>
+            <p className="text-xs font-black uppercase tracking-widest">Locked for Premium</p>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-5 flex flex-col flex-1">
-        <div className="flex flex-wrap gap-2 mb-3">
-          <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
-            {lesson.category}
-          </span>
-          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-            {lesson.emotionalTone}
-          </span>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${
-            lesson.accessLevel === "premium"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-green-100 text-green-700"
-          }`}>
-            {lesson.accessLevel === "premium" ? "⭐ Premium" : "Free"}
-          </span>
+      {/* Content Body */}
+      <div className="p-8 flex flex-col flex-1">
+        <div className="flex items-center gap-2 mb-4">
+           <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+           <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{lesson.emotionalTone}</span>
         </div>
 
-        <h3 className={`text-base font-bold text-gray-800 mb-2 line-clamp-2 ${isLocked ? "blur-sm select-none" : ""}`}>
+        <h3 className={`text-xl font-black text-gray-800 mb-3 line-clamp-2 leading-tight group-hover:text-indigo-600 transition ${isLocked ? "blur-sm select-none" : ""}`}>
           {lesson.title}
         </h3>
-        <p className={`text-sm text-gray-500 line-clamp-3 flex-1 ${isLocked ? "blur-sm select-none" : ""}`}>
+        <p className={`text-sm text-gray-400 font-medium line-clamp-3 mb-6 leading-relaxed flex-1 ${isLocked ? "blur-[2px] select-none" : ""}`}>
           {lesson.description}
         </p>
 
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <img
-              src={lesson.creatorPhoto || "https://i.ibb.co/placeholder.png"}
-              className="w-6 h-6 rounded-full object-cover"
-              alt={lesson.creatorName}
-            />
-            <span className="text-xs text-gray-500 truncate max-w-[100px]">{lesson.creatorName}</span>
+        <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="relative">
+                <img
+                  src={lesson.creatorPhoto || "https://i.ibb.co/placeholder.png"}
+                  className="w-10 h-10 rounded-2xl object-cover ring-4 ring-gray-50"
+                  alt={lesson.creatorName}
+                />
+                {!isLocked && <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>}
+             </div>
+             <div>
+                <p className="text-xs font-black text-gray-800 truncate max-w-[100px]">{lesson.creatorName}</p>
+                <p className="text-[10px] font-bold text-gray-400">{new Date(lesson.createdAt).toLocaleDateString()}</p>
+             </div>
           </div>
+
           {isLocked ? (
             <Link
               to="/pricing"
-              className="text-xs bg-yellow-500 text-white px-3 py-1.5 rounded-full hover:bg-yellow-600 transition"
+              className="bg-gray-800 text-white text-[10px] font-black px-4 py-2.5 rounded-xl uppercase tracking-widest hover:bg-black transition shadow-lg"
             >
-              Upgrade to View
+              Upgrade
             </Link>
           ) : (
             <Link
               to={`/lessons/${lesson._id}`}
-              className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-full hover:bg-indigo-700 transition"
+              className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2.5 rounded-xl uppercase tracking-widest hover:bg-indigo-700 transition shadow-xl shadow-indigo-100"
             >
-              See Details
+              Details
             </Link>
           )}
         </div>

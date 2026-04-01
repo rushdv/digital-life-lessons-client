@@ -37,6 +37,7 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
       { path: 'lessons', element: <PublicLessons /> },
+      { path: 'public-lessons', element: <PublicLessons /> },
       {
         path: 'lessons/:id',
         element: <PrivateRoute><LessonDetails /></PrivateRoute>,

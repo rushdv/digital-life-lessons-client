@@ -5,15 +5,15 @@ import useRole from "../hooks/useRole";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
-  const { user, logOut, isPremium } = useAuth();
-  const [role] = useRole();
+  const { user, logout, isPremium, role } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    await logOut();
+    await logout();
     toast.success("Logged out successfully!");
     setDropdownOpen(false);
+    setMenuOpen(false);
   };
 
   const navLinks = [
@@ -23,7 +23,7 @@ const Navbar = () => {
       ? [
           { to: "/dashboard/add-lesson", label: "Add Lesson" },
           { to: "/dashboard/my-lessons", label: "My Lessons" },
-          ...(!isPremium ? [{ to: "/pricing", label: "Pricing" }] : []),
+          ...(role !== "admin" && !isPremium ? [{ to: "/pricing", label: "Pricing" }] : []),
         ]
       : []),
   ];

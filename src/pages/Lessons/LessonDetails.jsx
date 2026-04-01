@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { FacebookShareButton, LinkedinShareButton, TwitterShareButton } from "react-share";
-import { FaFacebook, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaShareAlt, FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaFlag } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -34,6 +34,12 @@ const LessonDetails = () => {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/lessons/${id}`);
       return res.data;
     },
+  });
+
+  const { data: authorStats = {} } = useQuery({
+    queryKey: ["authorStats", lesson?.creatorEmail],
+    enabled: !!lesson?.creatorEmail,
+    queryFn: async () => (await axios.get(`${import.meta.env.VITE_API_URL}/users/stats/${lesson.creatorEmail}`)).data,
   });
 
   const { data: similar = [] } = useQuery({
@@ -85,7 +91,7 @@ const LessonDetails = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["lesson", id]);
       setComment("");
-      toast.success("Comment posted!");
+      toast.success("Reflection shared!");
     },
   });
 
@@ -94,50 +100,61 @@ const LessonDetails = () => {
       axiosSecure.post("/reports", { lessonId: id, reason: reportReason }),
     onSuccess: () => {
       setShowReportModal(false);
-      toast.success("Lesson reported. Thank you!");
+      setReportReason("");
+      toast.success("Report submitted for review.");
     },
   });
 
   const handleLike = () => {
-    if (!user) return toast.error("Please log in to like");
+    if (!user) return navigate("/login");
     likeMutation.mutate();
   };
 
   const handleReport = async () => {
+    if (!user) return navigate("/login");
     const result = await Swal.fire({
-      title: "Report this lesson?",
-      text: "Are you sure you want to report this lesson?",
+      title: "Wait! Are you sure?",
+      text: "Reporting a lesson triggers a community review. Only report content that violates our guidelines.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Report",
+      confirmButtonText: "Proceed",
       confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      customClass: { popup: 'rounded-3xl p-8' }
     });
     if (result.isConfirmed) setShowReportModal(true);
   };
 
   if (isLoading) return <Spinner />;
-  if (!lesson) return <div className="text-center py-20">Lesson not found.</div>;
+  if (!lesson) return <div className="text-center py-32 text-gray-400 font-bold">Lesson not found.</div>;
 
-  // Premium check
+  // Premium gate
   if (lesson.accessLevel === "premium" && !isPremium) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-10">
-          <p className="text-5xl mb-4">🔒</p>
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">Premium Lesson</h2>
-          <p className="text-gray-500 mb-6">
-            Upgrade to Premium to access this lesson and thousands of others.
-          </p>
-          <Link
-            to="/pricing"
-            className="inline-block bg-yellow-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-yellow-600 transition"
-          >
-            Upgrade to Premium ⭐
-          </Link>
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <div className="bg-gradient-to-br from-gray-900 to-indigo-900 rounded-[3rem] p-16 text-white shadow-2xl relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+           <div className="relative z-10">
+              <div className="w-20 h-20 bg-yellow-400 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-xl shadow-yellow-500/20">🔒</div>
+              <h2 className="text-4xl font-black mb-6 tracking-tight">Premium Insight Reserved</h2>
+              <p className="text-indigo-200 font-medium mb-10 max-w-lg mx-auto text-lg leading-relaxed">
+                This wisdom is exclusive to our Premium community. Upgrade now to unlock this lesson and 1,000+ others.
+              </p>
+              <Link
+                to="/pricing"
+                className="inline-block bg-yellow-400 text-yellow-900 px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-yellow-500 transition shadow-lg"
+              >
+                Ascend to Premium ⭐
+              </Link>
+           </div>
         </div>
-        <div className="mt-8 blur-sm select-none pointer-events-none">
-          <h1 className="text-3xl font-bold text-gray-800">{lesson.title}</h1>
-          <p className="mt-4 text-gray-500">{lesson.description?.substring(0, 200)}...</p>
+        <div className="mt-12 blur-md select-none pointer-events-none opacity-40 grayscale">
+          <h1 className="text-4xl font-black text-gray-800 mb-6">{lesson.title}</h1>
+          <div className="space-y-4 max-w-2xl mx-auto">
+             <div className="h-4 bg-gray-200 rounded-full w-full"></div>
+             <div className="h-4 bg-gray-200 rounded-full w-5/6"></div>
+             <div className="h-4 bg-gray-200 rounded-full w-4/6"></div>
+          </div>
         </div>
       </div>
     );
@@ -147,159 +164,168 @@ const LessonDetails = () => {
   const readingTime = Math.ceil(lesson.description?.split(" ").length / 200) || 1;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">{lesson.category}</span>
-          <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">{lesson.emotionalTone}</span>
-          {lesson.accessLevel === "premium" && (
-            <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">⭐ Premium</span>
-          )}
+    <div className="max-w-4xl mx-auto px-4 py-20 animate-fade-in">
+      {/* Category & Title */}
+      <div className="mb-12">
+        <div className="flex flex-wrap gap-3 mb-6">
+          <span className="text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full border border-indigo-100">{lesson.category}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest bg-purple-50 text-purple-600 px-4 py-1.5 rounded-full border border-purple-100">{lesson.emotionalTone}</span>
         </div>
-        <h1 className="text-3xl font-bold text-gray-800 leading-tight">{lesson.title}</h1>
+        <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight tracking-tight">{lesson.title}</h1>
       </div>
 
-      {/* Image */}
+      {/* Feature Image */}
       {lesson.image && (
-        <img src={lesson.image} alt={lesson.title} className="w-full rounded-2xl mb-8 max-h-96 object-cover" />
+        <div className="mb-12 group">
+          <img src={lesson.image} alt={lesson.title} className="w-full rounded-[2.5rem] shadow-2xl group-hover:scale-[1.01] transition duration-700 max-h-[500px] object-cover" />
+        </div>
       )}
 
-      {/* Metadata */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50 rounded-2xl p-4 mb-8 text-center text-sm">
-        <div><p className="text-gray-400 text-xs">Created</p><p className="font-medium">{new Date(lesson.createdAt).toLocaleDateString()}</p></div>
-        <div><p className="text-gray-400 text-xs">Updated</p><p className="font-medium">{new Date(lesson.updatedAt).toLocaleDateString()}</p></div>
-        <div><p className="text-gray-400 text-xs">Visibility</p><p className="font-medium capitalize">{lesson.visibility}</p></div>
-        <div><p className="text-gray-400 text-xs">Read Time</p><p className="font-medium">{readingTime} min</p></div>
+      {/* Meta Info Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 bg-gray-50 rounded-[2rem] p-6 text-center border border-gray-100">
+        <div><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Created At</p><p className="font-bold text-gray-700">{new Date(lesson.createdAt).toLocaleDateString()}</p></div>
+        <div><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Refined At</p><p className="font-bold text-gray-700">{new Date(lesson.updatedAt).toLocaleDateString()}</p></div>
+        <div><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Access Tier</p><p className="font-black text-indigo-600 capitalize">{lesson.accessLevel}</p></div>
+        <div><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Reading Depth</p><p className="font-bold text-gray-700">{readingTime} min read</p></div>
       </div>
 
-      {/* Description */}
-      <div className="prose max-w-none text-gray-700 leading-relaxed mb-8 whitespace-pre-wrap">
+      {/* Content */}
+      <div className="prose prose-indigo max-w-none text-gray-700 text-lg leading-[1.8] mb-16 whitespace-pre-wrap font-medium font-serif first-letter:text-5xl first-letter:font-black first-letter:text-indigo-600 first-letter:mr-3 first-letter:float-left">
         {lesson.description}
       </div>
 
-      {/* Author Card */}
-      <div className="bg-indigo-50 rounded-2xl p-5 flex items-center gap-4 mb-8">
-        <img
-          src={lesson.creatorPhoto || "https://i.ibb.co/placeholder.png"}
-          className="w-14 h-14 rounded-full object-cover"
-          alt={lesson.creatorName}
-        />
-        <div className="flex-1">
-          <p className="font-semibold text-gray-800">{lesson.creatorName}</p>
-          <p className="text-sm text-gray-500">{lesson.creatorEmail}</p>
+      {/* Author Card & Engagement */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16">
+        {/* Author */}
+        <div className="md:col-span-8 bg-white rounded-[2rem] border border-gray-100 p-8 shadow-sm flex items-center gap-6">
+          <div className="relative">
+            <img
+              src={lesson.creatorPhoto || "https://i.ibb.co/placeholder.png"}
+              className="w-20 h-20 rounded-3xl object-cover shadow-lg"
+              alt={lesson.creatorName}
+            />
+            {lesson.creatorRole === "admin" && <span className="absolute -top-2 -right-2 bg-yellow-400 text-white p-1.5 rounded-xl"><FaBookmark className="text-[10px]"/></span>}
+          </div>
+          <div className="flex-1">
+            <h4 className="text-xl font-black text-gray-800 mb-1">{lesson.creatorName}</h4>
+            <p className="text-xs font-bold text-gray-400 mb-4">{authorStats.totalLessons || 0} Lessons Published</p>
+            <Link
+              to={`/profile/${lesson.creatorEmail}`}
+              className="text-xs font-black text-indigo-600 uppercase tracking-widest hover:underline"
+            >
+              Explore Profile →
+            </Link>
+          </div>
         </div>
-        <Link
-          to={`/profile/${lesson.creatorEmail}`}
-          className="text-sm text-indigo-600 border border-indigo-300 px-4 py-2 rounded-lg hover:bg-indigo-100 transition"
-        >
-          View Profile
-        </Link>
+
+        {/* Stats */}
+        <div className="md:col-span-4 bg-indigo-600 rounded-[2rem] p-8 text-white shadow-xl shadow-indigo-100 flex flex-col justify-center gap-4">
+           <div className="flex justify-between items-center"><span className="text-xs font-bold opacity-80 uppercase tracking-widest">Appreciation</span><span className="font-black">{lesson.likesCount}</span></div>
+           <div className="flex justify-between items-center"><span className="text-xs font-bold opacity-80 uppercase tracking-widest">Bookmarks</span><span className="font-black">{lesson.favoritesCount}</span></div>
+           <div className="flex justify-between items-center"><span className="text-xs font-bold opacity-80 uppercase tracking-widest">Global Views</span><span className="font-black">{views}</span></div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="flex gap-6 mb-8 flex-wrap">
-        <span className="text-gray-600 text-sm">❤️ {lesson.likesCount || 0} Likes</span>
-        <span className="text-gray-600 text-sm">🔖 {lesson.favoritesCount || 0} Favorites</span>
-        <span className="text-gray-600 text-sm">👀 {views} Views</span>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3 mb-10">
+      {/* Action Toolbar */}
+      <div className="flex flex-wrap items-center gap-3 mb-20 border-y border-gray-100 py-8">
         <button
-          onClick={() => favMutation.mutate()}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-            isFavorited ? "bg-indigo-600 text-white" : "border border-indigo-300 text-indigo-600 hover:bg-indigo-50"
+          onClick={() => user ? favMutation.mutate() : navigate("/login")}
+          className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition ${
+            isFavorited ? "bg-indigo-600 text-white" : "bg-gray-50 text-gray-600 hover:bg-indigo-50"
           }`}
         >
-          🔖 {isFavorited ? "Saved" : "Save to Favorites"}
+          {isFavorited ? <FaBookmark /> : <FaRegBookmark />} {isFavorited ? "In Collection" : "Save Lesson"}
         </button>
         <button
           onClick={handleLike}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-            isLiked ? "bg-red-500 text-white" : "border border-gray-300 text-gray-600 hover:bg-red-50"
+          className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition ${
+            isLiked ? "bg-red-500 text-white" : "bg-gray-50 text-gray-600 hover:bg-red-50"
           }`}
         >
-          ❤️ {isLiked ? "Liked" : "Like"}
+          {isLiked ? <FaHeart /> : <FaRegHeart />} {isLiked ? "Liked" : "Like"}
         </button>
         <button
           onClick={handleReport}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-600 hover:bg-red-50 transition"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition"
         >
-          🚩 Report
+          <FaFlag /> Report
         </button>
-        {/* Social Share */}
-        <FacebookShareButton url={shareUrl}>
-          <span className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm border border-gray-300 hover:bg-blue-50 text-blue-600 transition">
-            <FaFacebook /> Share
-          </span>
-        </FacebookShareButton>
-        <TwitterShareButton url={shareUrl} title={lesson.title}>
-          <span className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm border border-gray-300 hover:bg-gray-100 transition">
-            <FaXTwitter /> Share
-          </span>
-        </TwitterShareButton>
-        <LinkedinShareButton url={shareUrl}>
-          <span className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm border border-gray-300 hover:bg-blue-50 text-blue-700 transition">
-            <FaLinkedin /> Share
-          </span>
-        </LinkedinShareButton>
+        <div className="flex items-center gap-2 ml-auto">
+          <FacebookShareButton url={shareUrl}><span className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center hover:scale-110 transition"><FaFacebook /></span></FacebookShareButton>
+          <TwitterShareButton url={shareUrl}><span className="w-10 h-10 rounded-xl bg-gray-800 text-white flex items-center justify-center hover:scale-110 transition"><FaXTwitter /></span></TwitterShareButton>
+          <LinkedinShareButton url={shareUrl}><span className="w-10 h-10 rounded-xl bg-blue-800 text-white flex items-center justify-center hover:scale-110 transition"><FaLinkedin /></span></LinkedinShareButton>
+        </div>
       </div>
 
       {/* Comments */}
-      <div className="mb-10">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">💬 Comments</h3>
+      <div className="mb-20">
+        <h3 className="text-2xl font-black text-gray-800 mb-10 flex items-center gap-3">
+           <span className="w-2 h-8 bg-purple-600 rounded-full"></span>
+           Reflective Comments
+        </h3>
         {user ? (
-          <div className="flex gap-3 mb-6">
-            <img src={user.photoURL} className="w-9 h-9 rounded-full object-cover" alt="you" />
+          <div className="flex gap-4 mb-12">
+            <img src={user.photoURL} className="w-12 h-12 rounded-2xl object-cover shadow-sm" alt="you" />
             <div className="flex-1">
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                rows={3}
-                placeholder="Share your thoughts..."
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none"
+                rows={4}
+                placeholder="Share your resonance with this wisdom..."
+                className="w-full bg-gray-50 border-none rounded-[1.5rem] px-6 py-4 text-sm font-medium focus:ring-4 focus:ring-indigo-100 transition resize-none outline-none"
               />
               <button
                 onClick={() => comment.trim() && commentMutation.mutate()}
-                disabled={!comment.trim()}
-                className="mt-2 bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-40 transition"
+                disabled={!comment.trim() || commentMutation.isLoading}
+                className="mt-4 bg-indigo-600 text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-40 transition shadow-lg shadow-indigo-100"
               >
-                Post Comment
+                Share Reflection
               </button>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-gray-500 mb-4">
-            <Link to="/login" className="text-indigo-600 font-medium">Log in</Link> to post a comment.
-          </p>
+          <div className="bg-indigo-50 rounded-2xl p-6 text-center mb-12">
+            <p className="text-sm font-bold text-indigo-700">
+              <Link to="/login" className="underline">Sign in</Link> to join the discussion.
+            </p>
+          </div>
         )}
-        <div className="space-y-4">
-          {lesson.comments?.map((c, i) => (
-            <div key={i} className="flex gap-3 bg-gray-50 rounded-xl p-4">
-              <img src={c.userPhoto || "https://i.ibb.co/placeholder.png"} className="w-8 h-8 rounded-full" alt={c.userName} />
-              <div>
-                <p className="text-sm font-medium text-gray-800">{c.userName}</p>
-                <p className="text-sm text-gray-600 mt-0.5">{c.text}</p>
+        <div className="space-y-6">
+          {lesson.comments?.slice().reverse().map((c, i) => (
+            <div key={i} className="flex gap-4 group">
+              <img src={c.userPhoto || "https://i.ibb.co/placeholder.png"} className="w-10 h-10 rounded-xl object-cover ring-2 ring-gray-50" alt={c.userName} />
+              <div className="flex-1 bg-white border border-gray-100 rounded-[1.5rem] p-6 shadow-sm group-hover:border-indigo-100 transition">
+                <div className="flex justify-between items-center mb-1">
+                  <p className="text-sm font-black text-gray-800">{c.userName}</p>
+                  <span className="text-[10px] font-bold text-gray-400">Sage Contributor</span>
+                </div>
+                <p className="text-sm text-gray-500 font-medium leading-relaxed">{c.text}</p>
               </div>
             </div>
           ))}
+          {(!lesson.comments || lesson.comments.length === 0) && (
+            <p className="text-center text-gray-400 font-bold py-10 italic">Be the first to reflect on this wisdom.</p>
+          )}
         </div>
       </div>
 
-      {/* Similar Lessons */}
+      {/* Similar Wisdom */}
       {similar.length > 0 && (
-        <div>
-          <h3 className="text-xl font-bold text-gray-800 mb-4">📚 Similar Lessons</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="pt-20 border-t border-gray-100">
+          <h3 className="text-2xl font-black text-gray-800 mb-10">Resonating Wisdom 📚</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {similar.slice(0, 6).map((l) => (
               <Link
                 key={l._id}
                 to={`/lessons/${l._id}`}
-                className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-sm transition"
+                className="bg-white rounded-3xl p-6 border border-gray-100 hover:shadow-xl hover:shadow-indigo-50 hover:-translate-y-1 transition duration-500"
               >
-                <p className="text-xs text-indigo-600 mb-1">{l.category}</p>
-                <p className="text-sm font-semibold text-gray-800 line-clamp-2">{l.title}</p>
+                <div className="flex items-center gap-2 mb-3">
+                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+                   <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{l.category}</span>
+                </div>
+                <h4 className="text-md font-black text-gray-800 line-clamp-2 leading-snug mb-3">{l.title}</h4>
+                <p className="text-xs font-black text-indigo-600 uppercase tracking-widest">Read Essence →</p>
               </Link>
             ))}
           </div>
@@ -308,28 +334,37 @@ const LessonDetails = () => {
 
       {/* Report Modal */}
       {showReportModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">🚩 Select Report Reason</h3>
-            <select
-              value={reportReason}
-              onChange={(e) => setReportReason(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 mb-4 text-sm"
-            >
-              <option value="">Choose a reason</option>
-              {REPORT_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <div className="flex gap-3">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4 animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center text-xl mb-6">🚩</div>
+            <h3 className="text-2xl font-black text-gray-800 mb-2">Report Content</h3>
+            <p className="text-sm text-gray-400 mb-8 font-medium">Help us keep the community safe. Select the primary reason for this report.</p>
+            
+            <div className="space-y-3 mb-8">
+               {REPORT_REASONS.map(r => (
+                 <button
+                   key={r}
+                   onClick={() => setReportReason(r)}
+                   className={`w-full text-left px-5 py-3 rounded-xl text-sm font-bold transition border ${
+                     reportReason === r ? "bg-red-50 border-red-200 text-red-600 shadow-sm" : "bg-gray-50 border-transparent text-gray-600 hover:bg-gray-100"
+                   }`}
+                 >
+                   {r}
+                 </button>
+               ))}
+            </div>
+
+            <div className="flex gap-4">
               <button
                 onClick={() => reportReason && reportMutation.mutate()}
-                disabled={!reportReason}
-                className="flex-1 bg-red-500 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-600 disabled:opacity-40 transition"
+                disabled={!reportReason || reportMutation.isLoading}
+                className="flex-[2] bg-red-500 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-600 transition shadow-lg shadow-red-100 disabled:opacity-40"
               >
-                Submit Report
+                {reportMutation.isLoading ? "Submitting..." : "Submit Report"}
               </button>
               <button
-                onClick={() => setShowReportModal(false)}
-                className="flex-1 border border-gray-300 py-2.5 rounded-lg text-sm hover:bg-gray-50 transition"
+                onClick={() => { setShowReportModal(false); setReportReason(""); }}
+                className="flex-1 border-2 border-gray-100 text-gray-400 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-50 transition"
               >
                 Cancel
               </button>

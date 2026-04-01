@@ -14,34 +14,48 @@ const MostSaved = () => {
   });
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-800">🔖 Most Saved Lessons</h2>
-          <p className="text-gray-500 mt-2">The wisdom the community can't stop saving</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section className="py-24 bg-white relative">
+      <div className="max-w-7xl mx-auto px-6">
+        <header className="mb-16 text-center lg:text-left flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div className="max-w-2xl">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 block mb-4">Viral Wisdom</span>
+            <h2 className="text-4xl font-black text-gray-800 tracking-tight leading-tight">Most Saved Lessons 🔖</h2>
+            <p className="text-gray-500 font-medium mt-4 text-lg">Insights that the community finds so valuable, they can't stop bookmarking them for later reflection.</p>
+          </div>
+          <Link to="/public-lessons" className="text-sm font-black text-indigo-600 uppercase tracking-widest hover:underline">Explore Archive →</Link>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {lessons.map((lesson) => (
             <div
               key={lesson._id}
-              className="bg-gray-50 border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex flex-col h-full"
+              className="group bg-gray-50 rounded-[2.5rem] p-8 hover:bg-white hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500 flex flex-col h-full border border-transparent hover:border-indigo-100"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-[10px] uppercase font-black text-indigo-600 bg-white px-3 py-1 rounded-full shadow-sm">
                   {lesson.category}
                 </span>
-                <span className="text-xs text-gray-400">🔖 {lesson.favoritesCount} saves</span>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  🔖 {lesson.favoritesCount || 0} Saves
+                </span>
               </div>
-              <h3 className="text-base font-bold text-gray-800 mb-2 line-clamp-2">{lesson.title}</h3>
-              <p className="text-sm text-gray-500 line-clamp-3 flex-1">{lesson.description}</p>
+              <h3 className="text-xl font-black text-gray-800 mb-4 line-clamp-2 leading-tight group-hover:text-indigo-600 transition">
+                {lesson.title}
+              </h3>
+              <p className="text-gray-500 font-medium line-clamp-3 mb-8 leading-relaxed flex-1">
+                {lesson.description}
+              </p>
               <Link
                 to={`/lessons/${lesson._id}`}
-                className="mt-4 text-sm text-indigo-600 font-medium hover:underline"
+                className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline"
               >
                 Read Lesson →
               </Link>
             </div>
           ))}
+          {lessons.length === 0 && (
+             <div className="col-span-full py-10 text-center text-gray-400 font-bold italic">Curating bookmarks...</div>
+          )}
         </div>
       </div>
     </section>

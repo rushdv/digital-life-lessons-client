@@ -1,35 +1,34 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 
 const features = [
-  { label: "Create lessons", free: "Up to 5", premium: "Unlimited" },
-  { label: "Create Premium lessons", free: "✗", premium: "✓" },
-  { label: "View Premium lessons", free: "✗", premium: "✓" },
-  { label: "Ad-free experience", free: "✗", premium: "✓" },
-  { label: "Priority listing", free: "✗", premium: "✓" },
-  { label: "Analytics dashboard", free: "Basic", premium: "Advanced" },
-  { label: "Export lessons as PDF", free: "✗", premium: "✓" },
-  { label: "Support", free: "Community", premium: "Priority" },
+  { label: "Lesson Creation", free: "5 Lessons", premium: "Unlimited" },
+  { label: "Premium Lessons", free: "✗", premium: "✓" },
+  { label: "Public Browsing", free: "Free Only", premium: "Free + Premium" },
+  { label: "Experience", free: "Standard", premium: "Ad-Free" },
+  { label: "Search & Filters", free: "Basic", premium: "Advanced" },
+  { label: "Contribution List", free: "✗", premium: "Priority Listing" },
+  { label: "Analytics", free: "Basic", premium: "Deep Insights" },
+  { label: "Support", free: "Community", premium: "24/7 Priority" },
 ];
 
 const Pricing = () => {
   const { user, isPremium } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleUpgrade = async () => {
+    if (!user) return toast.error("Please login to upgrade");
     setLoading(true);
     try {
-      const res = await axiosSecure.post("/create-checkout-session", {
-        email: user.email,
-      });
-      window.location.href = res.data.url;
-    } catch {
-      toast.error("Payment initiation failed. Try again.");
+      const res = await axiosSecure.post("/create-checkout-session", { email: user.email });
+      if (res.data.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      toast.error("Stripe Checkout failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -37,74 +36,102 @@ const Pricing = () => {
 
   if (isPremium) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-10">
-          <p className="text-5xl mb-4">⭐</p>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">You're Premium!</h2>
-          <p className="text-gray-500">You have lifetime access to all premium features.</p>
-          <span className="inline-block mt-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-semibold">
-            Premium Member ⭐
-          </span>
+      <div className="max-w-xl mx-auto px-4 py-24 text-center">
+        <div className="bg-gradient-to-br from-yellow-400 to-amber-600 rounded-[2.5rem] p-12 text-white shadow-2xl shadow-amber-100">
+          <div className="text-6xl mb-6 drop-shadow-lg">⭐</div>
+          <h2 className="text-3xl font-black mb-4 tracking-tighter italic">ELITE MEMBER</h2>
+          <p className="text-amber-100 font-medium mb-8 leading-relaxed">
+            You are a Premium member. Enjoy lifetime access to all our exclusive wisdom and features.
+          </p>
+          <div className="inline-block bg-white text-amber-600 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest">
+            Lifetime Access Verified
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-16">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-gray-800">Choose Your Plan</h1>
-        <p className="text-gray-500 mt-2">Unlock the full power of LifeLessons</p>
-      </div>
+    <div className="max-w-6xl mx-auto px-4 py-20 animate-fade-in">
+      <header className="text-center mb-20 max-w-2xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-black text-gray-800 tracking-tight mb-4">
+          Elevate Your <span className="text-indigo-600">Wisdom</span>
+        </h1>
+        <p className="text-gray-500 font-medium text-lg leading-relaxed">
+          One simple payment. Lifetime personal growth. Unlock the full potential of Digital Life Lessons.
+        </p>
+      </header>
 
-      {/* Plan Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {/* Free */}
-        <div className="bg-white border-2 border-gray-200 rounded-2xl p-8">
-          <div className="text-center mb-6">
-            <p className="text-4xl mb-2">🆓</p>
-            <h2 className="text-xl font-bold text-gray-800">Free Plan</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-3">৳0 <span className="text-base font-normal text-gray-400">forever</span></p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Comparison Table */}
+        <div className="lg:col-span-12 xl:col-span-8 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+          <div className="p-8 pb-4">
+             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+               <span className="w-2 h-8 bg-indigo-600 rounded-full"></span>
+               Feature Comparison
+             </h3>
           </div>
-          <ul className="space-y-3 text-sm">
-            {features.map((f) => (
-              <li key={f.label} className="flex items-center justify-between">
-                <span className="text-gray-600">{f.label}</span>
-                <span className={`font-medium ${f.free === "✗" ? "text-red-400" : "text-gray-800"}`}>{f.free}</span>
-              </li>
-            ))}
-          </ul>
-          <button disabled className="w-full mt-8 py-3 border-2 border-gray-200 rounded-xl text-gray-400 cursor-not-allowed text-sm font-medium">
-            Current Plan
-          </button>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-gray-50 border-y border-gray-100">
+                  <th className="px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Capabilities</th>
+                  <th className="px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Free Explorer</th>
+                  <th className="px-8 py-4 text-xs font-black text-indigo-600 uppercase tracking-widest text-center bg-indigo-50/50">Premium Sage</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {features.map((f, i) => (
+                  <tr key={i} className="hover:bg-gray-50/30 transition group">
+                    <td className="px-8 py-4 text-sm font-bold text-gray-600 group-hover:text-gray-800">{f.label}</td>
+                    <td className="px-8 py-4 text-sm text-center font-medium text-gray-400">{f.free}</td>
+                    <td className="px-8 py-4 text-sm text-center font-black text-indigo-700 bg-indigo-50/20">{f.premium}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Premium */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-2xl p-8 relative overflow-hidden">
-          <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">
-            BEST VALUE
-          </div>
-          <div className="text-center mb-6">
-            <p className="text-4xl mb-2">⭐</p>
-            <h2 className="text-xl font-bold">Premium Plan</h2>
-            <p className="text-3xl font-bold mt-3">৳1,500 <span className="text-base font-normal text-indigo-200">one-time</span></p>
-            <p className="text-xs text-indigo-200 mt-1">Lifetime access</p>
-          </div>
-          <ul className="space-y-3 text-sm">
-            {features.map((f) => (
-              <li key={f.label} className="flex items-center justify-between">
-                <span className="text-indigo-100">{f.label}</span>
-                <span className={`font-medium ${f.premium === "✗" ? "text-red-300" : "text-yellow-300"}`}>{f.premium}</span>
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={handleUpgrade}
-            disabled={loading}
-            className="w-full mt-8 py-3 bg-white text-indigo-700 rounded-xl font-bold text-sm hover:bg-indigo-50 transition disabled:opacity-60"
-          >
-            {loading ? "Redirecting to Stripe..." : "Upgrade to Premium →"}
-          </button>
+        {/* Pricing Card */}
+        <div className="lg:col-span-12 xl:col-span-4">
+           <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition duration-700"></div>
+              
+              <div className="relative z-10">
+                <span className="inline-block bg-white/20 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-6">
+                  Recommended Plan
+                </span>
+                <h2 className="text-3xl font-black mb-2 italic tracking-tighter">PREMIUM LITE</h2>
+                <div className="flex items-baseline gap-2 mb-2">
+                   <span className="text-5xl font-black tracking-tighter">৳1,500</span>
+                   <span className="text-indigo-200 font-bold text-sm">one-time</span>
+                </div>
+                <p className="text-indigo-100 text-sm font-medium mb-8">
+                  Unlock everything forever. No subscriptions. No hidden fees.
+                </p>
+
+                <ul className="space-y-4 mb-10">
+                   {["Lifetime Premium Access", "Unlimited Lesson Vault", "Global Sage Status", "Priority AI Listing"].map(item => (
+                     <li key={item} className="flex items-center gap-3 text-sm font-bold">
+                       <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">✓</span>
+                       {item}
+                     </li>
+                   ))}
+                </ul>
+
+                <button
+                  onClick={handleUpgrade}
+                  disabled={loading}
+                  className="w-full bg-white text-indigo-700 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-50 hover:scale-[1.02] transform transition disabled:opacity-60 shadow-xl shadow-indigo-900/20"
+                >
+                  {loading ? "Initializing Stripe..." : "Ascend to Premium →"}
+                </button>
+                <p className="text-center text-indigo-200 text-[10px] uppercase font-bold mt-4 tracking-widest">
+                  Secure Checkout via Stripe
+                </p>
+              </div>
+           </div>
         </div>
       </div>
     </div>

@@ -11,32 +11,37 @@ const TopContributors = () => {
   });
 
   return (
-    <section className="py-16 bg-indigo-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-800">🏆 Top Contributors This Week</h2>
-          <p className="text-gray-500 mt-2">Celebrating the most active wisdom sharers</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {contributors.map((user, i) => (
+    <section className="py-24 bg-indigo-50/50">
+      <div className="max-w-7xl mx-auto px-6">
+        <header className="mb-16 text-center">
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 block mb-4">Community Leaders</span>
+          <h2 className="text-4xl font-black text-gray-800 tracking-tight leading-tight">Top Contributors of the Week 🏆</h2>
+          <p className="text-gray-500 font-medium mt-4 text-lg">Celebrating the wisdom-sharers who go the extra mile for our collective evolution.</p>
+        </header>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          {contributors.slice(0, 6).map((user, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-4 text-center shadow-sm hover:shadow-md transition"
+              className="bg-white rounded-[2rem] p-6 text-center shadow-sm hover:shadow-xl hover:shadow-indigo-50 transition-all duration-500 transform hover:-translate-y-2 group"
             >
-              <div className="relative mx-auto w-16 h-16 mb-3">
+              <div className="relative mx-auto w-20 h-20 mb-4 ring-4 ring-indigo-50 rounded-full transition duration-500 group-hover:ring-indigo-100">
                 <img
                   src={user.photo || "https://i.ibb.co/placeholder.png"}
                   alt={user.name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-indigo-300"
+                  className="w-full h-full rounded-full object-cover transition duration-500 group-hover:scale-110"
                 />
                 {i === 0 && (
-                  <span className="absolute -top-2 -right-1 text-lg">👑</span>
+                   <div className="absolute -top-3 -right-1 bg-yellow-400 text-white w-8 h-8 rounded-xl flex items-center justify-center shadow-lg transform rotate-12 transition group-hover:rotate-0">👑</div>
                 )}
               </div>
-              <p className="text-sm font-semibold text-gray-800 truncate">{user.name}</p>
-              <p className="text-xs text-indigo-600 mt-1">{user.lessonCount} lessons</p>
+              <p className="text-sm font-black text-gray-800 truncate mb-1">{user.name}</p>
+              <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{user.lessonCount} Lessons Shared</p>
             </div>
           ))}
+          {contributors.length === 0 && (
+            <div className="col-span-full py-10 text-center text-gray-400 font-bold italic">Gathering this week's data...</div>
+          )}
         </div>
       </div>
     </section>

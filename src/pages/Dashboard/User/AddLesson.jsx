@@ -1,7 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import Lottie from "lottie-react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
@@ -11,8 +10,7 @@ const TONES = ["Motivational", "Sad", "Realization", "Gratitude"];
 const AddLesson = () => {
   const { user, isPremium } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const [success, setSuccess] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+  const [success, setSuccess] = useState(false);  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
 
   const onSubmit = async (data) => {
     try {
@@ -36,8 +34,10 @@ const AddLesson = () => {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">📝 Add New Lesson</h1>
 
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-center text-green-700 font-medium">
-          ✅ Lesson published successfully!
+        <div className="flex flex-col items-center justify-center mb-8 bg-green-50 border border-green-200 rounded-2xl p-6">
+          <p className="text-5xl mb-2">🎉</p>
+          <p className="text-green-700 font-bold text-lg mt-2">Lesson Published Successfully!</p>
+          <p className="text-green-600 text-sm">Your wisdom has been preserved.</p>
         </div>
       )}
 

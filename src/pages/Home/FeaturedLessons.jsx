@@ -15,66 +15,66 @@ const FeaturedLessons = () => {
   if (isLoading) return <Spinner />;
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-800">✨ Featured Life Lessons</h2>
-          <p className="text-gray-500 mt-2">Hand-picked wisdom from our community</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lessons.map((lesson) => (
-            <LessonCard key={lesson._id} lesson={lesson} />
-          ))}
-        </div>
-        <div className="text-center mt-8">
+    <section className="py-24 bg-white relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-40 translate-x-1/2 -translate-y-1/2"></div>
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <header className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 gap-6">
+          <div className="max-w-2xl">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 block mb-4">Curated Wisdom</span>
+            <h2 className="text-4xl font-black text-gray-800 tracking-tight leading-tight">Featured Reflections ✨</h2>
+            <p className="text-gray-500 font-medium mt-4 text-lg">Hand-picked insights from our most resonant contributors. These lessons have shaped many journeys.</p>
+          </div>
           <Link
             to="/public-lessons"
-            className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-full font-medium hover:bg-indigo-700 transition"
+            className="inline-block bg-gray-50 text-indigo-600 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-100 transition shadow-sm"
           >
-            View All Lessons →
+            Explore All Wisdom →
           </Link>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {lessons.slice(0, 3).map((lesson) => (
+            <FeaturedLessonCard key={lesson._id} lesson={lesson} />
+          ))}
         </div>
       </div>
     </section>
   );
 };
 
-const LessonCard = ({ lesson }) => (
-  <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition p-5 flex flex-col h-full border border-gray-100">
-    {lesson.image && (
-      <img
-        src={lesson.image}
-        alt={lesson.title}
-        className="w-full h-44 object-cover rounded-xl mb-4"
-      />
-    )}
-    <div className="flex items-center gap-2 mb-3 flex-wrap">
-      <span className="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
-        {lesson.category}
-      </span>
-      <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
-        {lesson.emotionalTone}
-      </span>
-      {lesson.accessLevel === "premium" && (
-        <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">⭐ Premium</span>
-      )}
+const FeaturedLessonCard = ({ lesson }) => (
+  <div className="group bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50 transition-all duration-500 p-8 flex flex-col h-full transform hover:-translate-y-2">
+    <div className="flex items-center gap-3 mb-6">
+       <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+       <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{lesson.category}</span>
     </div>
-    <h3 className="text-base font-bold text-gray-800 mb-2 line-clamp-2">{lesson.title}</h3>
-    <p className="text-sm text-gray-500 line-clamp-3 flex-1">{lesson.description}</p>
-    <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-      <div className="flex items-center gap-2">
+
+    <h3 className="text-2xl font-black text-gray-800 mb-4 line-clamp-2 leading-tight group-hover:text-indigo-600 transition">
+      {lesson.title}
+    </h3>
+    <p className="text-gray-500 font-medium line-clamp-3 mb-8 leading-relaxed flex-1">
+      {lesson.description}
+    </p>
+
+    <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
+      <div className="flex items-center gap-3">
         <img
           src={lesson.creatorPhoto || "https://i.ibb.co/placeholder.png"}
-          className="w-6 h-6 rounded-full object-cover"
+          className="w-10 h-10 rounded-2xl object-cover ring-4 ring-gray-50"
           alt={lesson.creatorName}
         />
-        <span className="text-xs text-gray-500">{lesson.creatorName}</span>
+        <div>
+          <p className="text-xs font-black text-gray-800">{lesson.creatorName}</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sage Spirit</p>
+        </div>
       </div>
       <Link
         to={`/lessons/${lesson._id}`}
-        className="text-xs text-indigo-600 font-medium hover:underline"
+        className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black group-hover:bg-indigo-600 group-hover:text-white transition shadow-sm"
       >
-        Read More →
+        →
       </Link>
     </div>
   </div>
