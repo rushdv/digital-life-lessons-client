@@ -13,4 +13,3 @@ dist
 .env.development.local
 .env.test.local
 .env.production.local
-node_modules
