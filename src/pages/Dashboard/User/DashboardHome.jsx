@@ -46,10 +46,10 @@ const DashboardHome = () => {
   return (
     <div className="animate-fade-in">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
           Welcome back, {user?.displayName?.split(" ")[0]}! 👋
         </h1>
-        <p className="text-gray-500 mt-1">Here's what's happening on your growth journey.</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Here's what's happening on your growth journey.</p>
       </header>
 
       {/* Stats Cards */}
@@ -71,10 +71,10 @@ const DashboardHome = () => {
         {/* Left Column: Chart & Recent */}
         <div className="lg:col-span-2 space-y-8">
           {/* Chart */}
-          <section className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+          <section className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-bold text-gray-800">📊 Contribution Analytics</h3>
-              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase">2024 Performance</span>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">📊 Contribution Analytics</h3>
+              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-full uppercase">2024 Performance</span>
             </div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -89,7 +89,7 @@ const DashboardHome = () => {
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9ca3af' }} dy={10} />
                   <YAxis hide />
                   <Tooltip
-                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', backgroundColor: '#1f2937', color: '#f1f5f9' }}
                   />
                   <Area
                     type="monotone"
@@ -105,24 +105,24 @@ const DashboardHome = () => {
           </section>
 
           {/* Recent Lessons */}
-          <section className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+          <section className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-gray-800">🕒 Recent Reflections</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">🕒 Recent Reflections</h3>
               <Link to="/dashboard/my-lessons" className="text-sm font-bold text-indigo-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-4">
               {myLessons.length > 0 ? (
                 myLessons.slice(0, 5).map((l, i) => (
                   <div key={l._id} className="flex items-center group">
-                    <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-lg mr-4 group-hover:bg-indigo-50 transition">
+                    <div className="w-10 h-10 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg mr-4 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950 transition">
                       {i % 2 === 0 ? "🧘" : "🧠"}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-700 line-clamp-1 group-hover:text-indigo-600 transition">{l.title}</p>
+                      <p className="text-sm font-bold text-gray-700 dark:text-gray-200 line-clamp-1 group-hover:text-indigo-600 transition">{l.title}</p>
                       <p className="text-xs text-gray-400 font-medium">{l.category} • {new Date(l.createdAt).toLocaleDateString()}</p>
                     </div>
                     <span className={`text-[10px] uppercase font-black px-2 py-1 rounded-lg ${
-                      l.visibility === "public" ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-500"
+                      l.visibility === "public" ? "bg-green-100 dark:bg-green-900/30 text-green-600" : "bg-gray-100 dark:bg-gray-800 text-gray-500"
                     }`}>
                       {l.visibility}
                     </span>
@@ -155,9 +155,9 @@ const DashboardHome = () => {
             </div>
           </section>
 
-          <section className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Wisdom Tip 💡</h3>
-            <div className="bg-indigo-50 rounded-2xl p-4 italic text-indigo-700 text-sm leading-relaxed border-l-4 border-indigo-600">
+          <section className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Wisdom Tip 💡</h3>
+            <div className="bg-indigo-50 dark:bg-indigo-950 rounded-2xl p-4 italic text-indigo-700 dark:text-indigo-300 text-sm leading-relaxed border-l-4 border-indigo-600">
               "Experience is not what happens to you; it's what you do with what happens to you." — Aldous Huxley
             </div>
             <p className="text-xs text-gray-400 mt-4 leading-relaxed font-medium">Keep documenting your journey. Each lesson shared is another step toward collective growth.</p>

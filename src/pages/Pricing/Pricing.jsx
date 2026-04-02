@@ -54,19 +54,19 @@ const Pricing = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 animate-fade-in">
       <header className="text-center mb-20 max-w-2xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-black text-gray-800 tracking-tight mb-4">
+        <h1 className="text-4xl md:text-5xl font-black text-gray-800 dark:text-gray-100 tracking-tight mb-4">
           Elevate Your <span className="text-indigo-600">Wisdom</span>
         </h1>
-        <p className="text-gray-500 font-medium text-lg leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-400 font-medium text-lg leading-relaxed">
           One simple payment. Lifetime personal growth. Unlock the full potential of Digital Life Lessons.
         </p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Comparison Table */}
-        <div className="lg:col-span-12 xl:col-span-8 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div className="lg:col-span-12 xl:col-span-8 bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
           <div className="p-8 pb-4">
-             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+             <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                <span className="w-2 h-8 bg-indigo-600 rounded-full"></span>
                Feature Comparison
              </h3>
@@ -74,18 +74,18 @@ const Pricing = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-gray-50 border-y border-gray-100">
+                <tr className="bg-gray-50 dark:bg-gray-800 border-y border-gray-100 dark:border-gray-700">
                   <th className="px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Capabilities</th>
                   <th className="px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Free Explorer</th>
-                  <th className="px-8 py-4 text-xs font-black text-indigo-600 uppercase tracking-widest text-center bg-indigo-50/50">Premium Sage</th>
+                  <th className="px-8 py-4 text-xs font-black text-indigo-600 uppercase tracking-widest text-center bg-indigo-50/50 dark:bg-indigo-950/50">Premium Sage</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {features.map((f, i) => (
-                  <tr key={i} className="hover:bg-gray-50/30 transition group">
-                    <td className="px-8 py-4 text-sm font-bold text-gray-600 group-hover:text-gray-800">{f.label}</td>
+                  <tr key={i} className="hover:bg-gray-50/30 dark:hover:bg-gray-800/50 transition group">
+                    <td className="px-8 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100">{f.label}</td>
                     <td className="px-8 py-4 text-sm text-center font-medium text-gray-400">{f.free}</td>
-                    <td className="px-8 py-4 text-sm text-center font-black text-indigo-700 bg-indigo-50/20">{f.premium}</td>
+                    <td className="px-8 py-4 text-sm text-center font-black text-indigo-700 dark:text-indigo-400 bg-indigo-50/20 dark:bg-indigo-950/20">{f.premium}</td>
                   </tr>
                 ))}
               </tbody>
@@ -93,7 +93,7 @@ const Pricing = () => {
           </div>
         </div>
 
-        {/* Pricing Card */}
+        {/* Pricing Card — unchanged (already dark gradient) */}
         <div className="lg:col-span-12 xl:col-span-4">
            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden group">
               <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition duration-700"></div>

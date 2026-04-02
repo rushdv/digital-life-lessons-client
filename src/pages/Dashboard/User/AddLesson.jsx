@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import Lottie from "lottie-react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
@@ -31,24 +32,28 @@ const AddLesson = () => {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">📝 Add New Lesson</h1>
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">📝 Add New Lesson</h1>
 
       {success && (
-        <div className="flex flex-col items-center justify-center mb-8 bg-green-50 border border-green-200 rounded-2xl p-6">
-          <p className="text-5xl mb-2">🎉</p>
-          <p className="text-green-700 font-bold text-lg mt-2">Lesson Published Successfully!</p>
-          <p className="text-green-600 text-sm">Your wisdom has been preserved.</p>
+        <div className="flex flex-col items-center justify-center mb-8 bg-indigo-50 border border-indigo-100 rounded-2xl p-6">
+          <Lottie
+            path="/success-animation.json"
+            loop={false}
+            style={{ width: 120, height: 120 }}
+          />
+          <p className="text-indigo-700 font-bold text-lg mt-2">Lesson Published Successfully!</p>
+          <p className="text-indigo-500 text-sm">Your wisdom has been preserved.</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 space-y-5">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Lesson Title *</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lesson Title *</label>
           <input
             type="text"
             placeholder="What did you learn?"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
             {...register("title", { required: "Title is required" })}
           />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}

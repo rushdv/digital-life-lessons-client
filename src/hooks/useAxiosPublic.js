@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const baseURL = (import.meta.env.VITE_API_URL || 'https://digital-life-lessons-server-one.vercel.app').replace(/\/$/, '')
+
 const axiosPublic = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://digital-life-lessons-server-one.vercel.app',
+  baseURL,
 })
 
 const useAxiosPublic = () => axiosPublic

@@ -75,14 +75,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-950 dark:to-gray-900 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8">
         <div className="text-center mb-8">
           <span className="text-4xl">📖</span>
-          <h2 className="text-2xl font-bold text-gray-800 mt-2">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2">
             Welcome Back
           </h2>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Sign in to continue your journey
           </p>
         </div>
@@ -91,14 +91,14 @@ const Login = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email
             </label>
 
             <input
               type="email"
               placeholder="your@email.com"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               {...register("email", { required: "Email is required" })}
             />
 
@@ -111,7 +111,7 @@ const Login = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password
             </label>
 
@@ -119,7 +119,7 @@ const Login = () => {
               <input
                 type={showPass ? "text" : "password"}
                 placeholder="••••••••"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
+                className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
                 {...register("password", { required: "Password is required" })}
               />
 
@@ -151,15 +151,15 @@ const Login = () => {
 
         {/* Divider */}
         <div className="flex items-center my-5">
-          <hr className="flex-1 border-gray-200" />
+          <hr className="flex-1 border-gray-200 dark:border-gray-700" />
           <span className="mx-3 text-xs text-gray-400">OR</span>
-          <hr className="flex-1 border-gray-200" />
+          <hr className="flex-1 border-gray-200 dark:border-gray-700" />
         </div>
 
         {/* Google Login */}
         <button
           onClick={handleGoogle}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-center gap-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         >
           <img
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -170,7 +170,7 @@ const Login = () => {
         </button>
 
         {/* Register link */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
           Don't have an account?{" "}
           <Link
             to="/register"

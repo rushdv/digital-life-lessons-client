@@ -1,15 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { FacebookShareButton, LinkedinShareButton, TwitterShareButton } from "react-share";
-import { FaFacebook, FaLinkedin, FaShareAlt, FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaFlag } from "react-icons/fa";
+import { FaFacebook, FaLinkedin, FaShareAlt, FaHeart, FaRegHeart, FaBookmark, FaRegBookmark, FaFlag, FaFilePdf } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Spinner from "../../components/Spinner";
 import axios from "axios";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const REPORT_REASONS = [
   "Inappropriate Content", "Hate Speech or Harassment",
@@ -26,6 +28,8 @@ const LessonDetails = () => {
   const [comment, setComment] = useState("");
   const [reportReason, setReportReason] = useState("");
   const [showReportModal, setShowReportModal] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const pdfRef = useRef(null);
   const views = useMemo(() => Math.floor(Math.random() * 10000), []);
 
   const { data: lesson, isLoading } = useQuery({
@@ -125,6 +129,31 @@ const LessonDetails = () => {
     if (result.isConfirmed) setShowReportModal(true);
   };
 
+  const handleExportPdf = async () => {
+    if (!pdfRef.current) return;
+    setExportingPdf(true);
+    try {
+      const canvas = await html2canvas(pdfRef.current, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      let y = 0;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      while (y < pdfHeight) {
+        pdf.addImage(imgData, "PNG", 0, -y, pdfWidth, pdfHeight);
+        y += pageHeight;
+        if (y < pdfHeight) pdf.addPage();
+      }
+      pdf.save(`${lesson.title || "lesson"}.pdf`);
+      toast.success("PDF exported successfully!");
+    } catch {
+      toast.error("Failed to export PDF.");
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
   if (isLoading) return <Spinner />;
   if (!lesson) return <div className="text-center py-32 text-gray-400 font-bold">Lesson not found.</div>;
 
@@ -165,6 +194,8 @@ const LessonDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-20 animate-fade-in">
+      {/* PDF Export Content Wrapper */}
+      <div ref={pdfRef}>
       {/* Category & Title */}
       <div className="mb-12">
         <div className="flex flex-wrap gap-3 mb-6">
@@ -250,6 +281,13 @@ const LessonDetails = () => {
         >
           <FaFlag /> Report
         </button>
+        <button
+          onClick={handleExportPdf}
+          disabled={exportingPdf}
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest bg-gray-50 text-gray-500 hover:bg-green-50 hover:text-green-600 transition disabled:opacity-50"
+        >
+          <FaFilePdf /> {exportingPdf ? "Exporting..." : "Export PDF"}
+        </button>
         <div className="flex items-center gap-2 ml-auto">
           <FacebookShareButton url={shareUrl}><span className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center hover:scale-110 transition"><FaFacebook /></span></FacebookShareButton>
           <TwitterShareButton url={shareUrl}><span className="w-10 h-10 rounded-xl bg-gray-800 text-white flex items-center justify-center hover:scale-110 transition"><FaXTwitter /></span></TwitterShareButton>
@@ -333,6 +371,7 @@ const LessonDetails = () => {
       )}
 
       {/* Report Modal */}
+      </div>{/* end pdfRef */}
       {showReportModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4 animate-fade-in">
           <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">

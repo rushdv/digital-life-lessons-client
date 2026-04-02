@@ -61,7 +61,7 @@ const HeroBanner = () => {
                   <div className="flex gap-4 justify-center md:justify-start flex-wrap">
                     <Link
                       to="/public-lessons"
-                      className="bg-white text-gray-900 font-black px-10 py-4 rounded-2xl hover:scale-105 transform transition shadow-2xl uppercase text-xs tracking-widest"
+                      className="bg-white text-gray-800 font-black px-10 py-4 rounded-2xl hover:scale-105 transform transition shadow-2xl uppercase text-xs tracking-widest"
                     >
                       Explore Lessons
                     </Link>

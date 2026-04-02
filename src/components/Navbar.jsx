@@ -3,9 +3,12 @@ import { Link, NavLink } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useRole from "../hooks/useRole";
 import toast from "react-hot-toast";
+import { useTheme } from "../providers/ThemeProvider";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 const Navbar = () => {
   const { user, logout, isPremium, role } = useAuth();
+  const { dark, toggle } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,7 +32,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
@@ -57,6 +60,14 @@ const Navbar = () => {
 
         {/* Auth Buttons / Avatar */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggle}
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-yellow-300 hover:scale-110 transition"
+            title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+          </button>
           {user ? (
             <div className="relative">
               <button
@@ -75,27 +86,27 @@ const Navbar = () => {
                 )}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                  <p className="px-4 py-2 text-sm font-semibold text-gray-800 border-b">
+                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50">
+                  <p className="px-4 py-2 text-sm font-semibold text-gray-800 dark:text-gray-100 border-b dark:border-gray-700">
                     {user.displayName}
                   </p>
                   <Link
                     to="/dashboard/profile"
                     onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-indigo-50"
+                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700"
                   >
                     Profile
                   </Link>
                   <Link
                     to={role === "admin" ? "/dashboard/admin" : "/dashboard"}
                     onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-indigo-50"
+                    className="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700"
                   >
                     Dashboard
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                   >
                     Log Out
                   </button>
@@ -137,17 +148,24 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t px-4 pb-4">
+        <div className="md:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-700 px-4 pb-4">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               onClick={() => setMenuOpen(false)}
-              className="block py-2 text-sm text-gray-600 hover:text-indigo-600"
+              className="block py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600"
             >
               {link.label}
             </NavLink>
           ))}
+          <button
+            onClick={toggle}
+            className="flex items-center gap-2 py-2 text-sm text-gray-600 dark:text-yellow-300 font-medium"
+          >
+            {dark ? <FiSun size={14} /> : <FiMoon size={14} />}
+            {dark ? "Light Mode" : "Dark Mode"}
+          </button>
           {!user ? (
             <div className="flex gap-2 mt-2">
               <Link to="/login" className="flex-1 text-center py-2 border border-indigo-600 text-indigo-600 rounded-lg text-sm">

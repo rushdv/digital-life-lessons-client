@@ -23,15 +23,15 @@ const DashboardLayout = () => {
   const links = role === 'admin' ? adminLinks : userLinks
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-100 shadow-sm flex-shrink-0 hidden md:flex flex-col">
-        <div className="p-6 border-b border-gray-100">
+      <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 shadow-sm flex-shrink-0 hidden md:flex flex-col">
+        <div className="p-6 border-b border-gray-100 dark:border-gray-800">
           <NavLink to="/" className="flex items-center gap-2">
             <span className="text-xl">📖</span>
-            <span className="font-bold text-indigo-700">LifeLessons</span>
+            <span className="font-bold text-indigo-700 dark:text-indigo-400">LifeLessons</span>
           </NavLink>
-          <p className="text-xs text-gray-400 mt-1 font-medium">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">
             {role === 'admin' ? 'Admin Panel' : 'My Dashboard'}
           </p>
         </div>
@@ -45,7 +45,7 @@ const DashboardLayout = () => {
                 `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                    : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-600'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-600'
                 }`
               }
             >
@@ -53,10 +53,10 @@ const DashboardLayout = () => {
             </NavLink>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 dark:border-gray-800">
           <NavLink
             to="/"
-            className="flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-500 hover:bg-gray-50 transition"
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
           >
             ← Back to Site
           </NavLink>
@@ -64,7 +64,7 @@ const DashboardLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-auto">
+      <main className="flex-1 p-6 md:p-10 overflow-auto bg-gray-50 dark:bg-gray-950">
         <Outlet />
       </main>
     </div>
